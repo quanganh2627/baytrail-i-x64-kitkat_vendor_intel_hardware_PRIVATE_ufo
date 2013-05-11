@@ -33,6 +33,7 @@ Notes:
 #define _LIBPAVP_H_
 
 #ifndef _MSC_VER
+#include <cstdint>
 typedef uint8_t     UINT8;
 typedef uint8_t     BYTE;
 typedef uint16_t    UINT16;
@@ -84,19 +85,7 @@ public:
     } hdcp2_content_stream_type;
     ///@}
 
-    /// \enum pavp_lib_session::encryption_type
-    /// PAVP Encryption Types
-    /// @{
-    typedef enum
-    {
-        pavp_encryption_none            = 1,    //!< No encryption.
-        pavp_encryption_aes128_ctr      = 2,    //!< AES128 CTR encryption.
-        pavp_encryption_aes128_cbc      = 4,    //!< AES128 CBC encryption.
-        pavp_encryption_dece_aes128_ctr = 16    //!< AES128 DECE encryption.
-    } encryption_type;
-    ///@}
-
-    /// \enum pavp_lib_session::encryption_type
+    /// \enum pavp_lib_session::key_type
     /// PAVP Key Types
     /// @{
     typedef enum
