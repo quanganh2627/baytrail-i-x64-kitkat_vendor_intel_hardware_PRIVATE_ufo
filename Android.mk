@@ -44,4 +44,8 @@ $(LOCAL_MODULE)_always_extract:
 	$(hide) mkdir -p $(dir $@)
 	$(hide) $(PRIVATE_PATH)/dist_install.sh $(PRIVATE_PATH)/dist $(PRODUCT_OUT)
 
+ifeq ($(TARGET_BOARD_PLATFORM),bigcore)
+	$(hide) $(PRIVATE_PATH)/dist_install.sh $(PRIVATE_PATH)/dist_bigcore $(PRODUCT_OUT)
+endif
+
 endif
