@@ -266,21 +266,64 @@ public:
         PFNWIDIAGENT_HDCPSENDMESSAGE    pSend,
         PFNWIDIAGENT_HDCPRECEIVEMESSAGE pReceive) = 0;
 
-#if (_DEBUG || _RELEASE_INTERNAL)
+
+    //HSW Android WideVine Stuff
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief       Encrypts an uncompressed clear surface, to pass back to the application.
-    /// \param       src_resource   [in] The source resource which contains the clear data. 
-    /// \param       dst_Resource   [out] The Destination resource. This resource will contain the encrypted data. It should be allocated by the caller.
-    /// \param       width  [in] The width of the surface in Bytes.
-    /// \param       height [in] The height of the surface in Bytes (pay attention that for NV12 the height(Bytes) = 1.5*height(Pixel)).
-    /// \return     status_ok on success, error codes on failure.
+    /// \brief       Start HSW WideVine connection status heart beat message.
+    /// \par         Details:
+    /// \li          This function should be called after set entitlement key and before first video process frame.
+    ///              Algorithm -
+    ///              - App -
+    ///              check_connection_status_heart_beat()
+    ///              first_video_process_frame()
+    ///              while playback
+    ///                 for i = 1 to 100
+    ///                     do nothing
+    ///                 check_connection_status_heart_beat()
+    ///              end while
+    ///              - Driver -
+    ///              Call Get WideVine Nonce (It is different from regular gent nonce)
+    ///              Program Nonce to GPU and Get Connection Status
+    ///              Verify Connection Status and return T/F if HDCP alive 
+    ///              - Firmware -
+    ///              Wait for Connection Status before Xscripting first Video Frame
+    ///              Receive request for connection status and verify
+    ///              Start counter till 100 frames
+    ///                 Process video frames
+    ///              if on 100th frame and connection status is not received then stop doing Xscripting 
+    ///              
+    /// \param       bStartCSHeartBeat  [out] 
+    /// 
+    /// \return      status_ok on success, error codes on failure.
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual pavp_lib_code encryption_blt(
-        BYTE*   src_resource,
-        BYTE*   dst_Resource,
-        UINT32  width,
-        UINT32  height) = 0;
-#endif
+    virtual pavp_lib_code check_connection_status_heart_beat(
+        bool        *bCSHeartBeatStatus) = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Start HSW WideVine crypto init dma message.
+    /// \par         Details:
+    /// \li          This function should be called to get handle to DMA message.
+    /// \param       pMessage  [in] 
+    /// \param       msg_length  [in] 
+    /// \param       handle  [out] 
+    /// 
+    /// \return      status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code oem_crypto_init_dma(
+        UINT8       *pMessage,
+        UINT32      msg_length,
+        UINT32      *handle) = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Start HSW WideVine crypto uninit dma message.
+    /// \par         Details:
+    /// \li          This function should be called to free handle to DMA message.
+    /// \param       handle  [in]
+    ///
+    /// \return      status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code oem_crypto_uninit_dma(
+        UINT32      *handle) = 0;
 
 protected:
 
