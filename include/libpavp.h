@@ -266,6 +266,21 @@ public:
         PFNWIDIAGENT_HDCPSENDMESSAGE    pSend,
         PFNWIDIAGENT_HDCPRECEIVEMESSAGE pReceive) = 0;
 
+#if (_DEBUG || _RELEASE_INTERNAL)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Encrypts an uncompressed clear surface, to pass back to the application.
+    /// \param       src_resource   [in] The source resource which contains the clear data. 
+    /// \param       dst_Resource   [out] The Destination resource. This resource will contain the encrypted data. It should be allocated by the caller.
+    /// \param       width  [in] The width of the surface in Bytes.
+    /// \param       height [in] The height of the surface in Bytes (pay attention that for NV12 the height(Bytes) = 1.5*height(Pixel)).
+    /// \return     status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code encryption_blt(
+        BYTE*   src_resource,
+        BYTE*   dst_Resource,
+        UINT32  width,
+        UINT32  height) = 0;
+#endif
 
     //HSW Android WideVine Stuff
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
