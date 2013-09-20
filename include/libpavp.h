@@ -266,9 +266,10 @@ public:
         PFNWIDIAGENT_HDCPSENDMESSAGE    pSend,
         PFNWIDIAGENT_HDCPRECEIVEMESSAGE pReceive) = 0;
 
-#if (_DEBUG || _RELEASE_INTERNAL)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief       Encrypts an uncompressed clear surface, to pass back to the application.
+    /// \brief       Encrypts an uncompressed clear surface, to pass back to the application. 
+    ///              Adding this function "declaration but disabling definition" in release driver will remove qualms for running P4 release-internal 
+    ///              driver on release OTC build. 
     /// \param       src_resource   [in] The source resource which contains the clear data. 
     /// \param       dst_Resource   [out] The Destination resource. This resource will contain the encrypted data. It should be allocated by the caller.
     /// \param       width  [in] The width of the surface in Bytes.
@@ -278,9 +279,8 @@ public:
     virtual pavp_lib_code encryption_blt(
         BYTE*   src_resource,
         BYTE*   dst_Resource,
-        UINT32  width,
-        UINT32  height) = 0;
-#endif
+        DWORD   width,
+        DWORD   height) = 0;
 
     //HSW Android WideVine Stuff
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
