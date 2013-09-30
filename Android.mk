@@ -9,8 +9,19 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := ufo
 LOCAL_MODULE_TAGS := optional
 
+# Required static libraries or export_includes
 # libastl - From external/asti, required for building these packages.
 LOCAL_STATIC_LIBRARIES := libastl
+
+# Required libraries or export_includes
+LOCAL_SHARED_LIBRARIES :=
+LOCAL_SHARED_LIBRARIES += libva
+LOCAL_SHARED_LIBRARIES += libva-android
+ifeq ($(strip $(INTEL_WIDI)),true)
+ifeq ($(strip $(INTEL_WIDI_BAYTRAIL)),true)
+LOCAL_SHARED_LIBRARIES += libhwcwidi
+endif
+endif
 
 # Replace $(BUILD_PHONY_PACKAGE) with a kludge that will generate
 # pre-requisites for the package, particularly $(LOCAL_STATIC_LIBRARIES).
