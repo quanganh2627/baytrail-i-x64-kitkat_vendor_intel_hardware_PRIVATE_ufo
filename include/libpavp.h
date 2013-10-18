@@ -49,44 +49,6 @@ typedef uint32_t    DWORD;
 /// The interface version the library was compiled with.
 #define INTERFACE_VERSION 0x06
 
-#define PAVP_WLOCK()     {                                                                              \
-            err = pthread_rwlock_wrlock(&m_RwLock);                                                     \
-            if (err != 0)                                                                               \
-            {                                                                                           \
-                PAVP_LIB_DBGMSG(ANDROID_LOG_ERROR, "Failed to acquire writer lock. errno = %d.", err);  \
-                rc = pavp_lib_session::operation_failed;                                                \
-                break;                                                                                  \
-            }                                                                                           \
-            PAVP_LIB_DBGMSG(ANDROID_LOG_DEBUG, "Read/write lock: writer lock acquired.");               \
-        }
-
-#define PAVP_RLOCK()     {                                                                               \
-            err = pthread_rwlock_rdlock(&m_RwLock);                                                      \
-            if (err != 0)                                                                                \
-            {                                                                                            \
-                PAVP_LIB_DBGMSG(ANDROID_LOG_ERROR, "Failed to acquire read lock. errno = %d.", err);     \
-                rc = pavp_lib_session::operation_failed;                                                 \
-                break;                                                                                   \
-            }                                                                                            \
-            PAVP_LIB_DBGMSG(ANDROID_LOG_DEBUG, "Read/write lock: writer lock acquired.");                \
-        }
-
-#define PAVP_RWUNLOCK()    {                                                                               \
-            if (err == 0)                                                                                  \
-            {                                                                                              \
-                err = pthread_rwlock_unlock(&m_RwLock);                                                    \
-                if (err != 0)                                                                              \
-                {                                                                                          \
-                    PAVP_LIB_DBGMSG(ANDROID_LOG_ERROR, "Failed to release writer lock. errno = %d.", err); \
-                    rc = pavp_lib_session::operation_failed;                                               \
-                }                                                                                          \
-                else                                                                                       \
-                {                                                                                          \
-                    PAVP_LIB_DBGMSG(ANDROID_LOG_DEBUG, "Read/write lock: writer lock released.");          \
-                }                                                                                          \
-            }                                                                                              \
-        }
-
 class pavp_lib_session
 {
 public:
@@ -388,7 +350,7 @@ private:
     // Default constructor, copy constructor and assignment operator should not be used.
     pavp_lib_session& operator=(const pavp_lib_session& other);
     pavp_lib_session(const pavp_lib_session& other);
-        
+    
 };
 
 #endif
