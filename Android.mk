@@ -89,7 +89,7 @@ LOCAL_STRIP_MODULE := false
 LOCAL_COPY_HEADERS_TO := libpavp/
 
 LOCAL_COPY_HEADERS :=
-LOCAL_COPY_HEADERS += include/libpavp.h
+LOCAL_COPY_HEADERS += inc/libpavp/libpavp.h
 # How it should have been done?
 ## LOCAL_COPY_HEADERS += include/libpavp/libpavp.h
 
@@ -116,8 +116,8 @@ include $(CLEAR_VARS)
 LOCAL_COPY_HEADERS_TO := ufo/
 
 LOCAL_COPY_HEADERS :=
-LOCAL_COPY_HEADERS += include/graphics.h
-LOCAL_COPY_HEADERS += include/gralloc.h
+LOCAL_COPY_HEADERS += inc/ufo/graphics.h
+LOCAL_COPY_HEADERS += inc/ufo/gralloc.h
 # How it should have been done?
 ## LOCAL_COPY_HEADERS += include/ufo/graphics.h
 ## LOCAL_COPY_HEADERS += include/ufo/gralloc.h
