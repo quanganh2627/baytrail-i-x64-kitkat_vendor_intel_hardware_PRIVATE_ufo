@@ -9,19 +9,8 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := ufo
 LOCAL_MODULE_TAGS := optional
 
-# Required static libraries or export_includes
 # libastl - From external/asti, required for building these packages.
 LOCAL_STATIC_LIBRARIES := libastl
-
-# Required libraries or export_includes
-LOCAL_SHARED_LIBRARIES :=
-LOCAL_SHARED_LIBRARIES += libva
-LOCAL_SHARED_LIBRARIES += libva-android
-ifeq ($(strip $(INTEL_WIDI)),true)
-ifeq ($(strip $(INTEL_WIDI_BAYTRAIL)),true)
-LOCAL_SHARED_LIBRARIES += libhwcwidi
-endif
-endif
 
 # Replace $(BUILD_PHONY_PACKAGE) with a kludge that will generate
 # pre-requisites for the package, particularly $(LOCAL_STATIC_LIBRARIES).
@@ -66,7 +55,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libpavp
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_EXPORT_C_INCLUDE_DIRS += $(UFO_PROJECT_PATH)/inc/libpavp
+LOCAL_EXPORT_C_INCLUDE_DIRS += $(UFO_PROJECT_PATH)/include
 
 # Can't use shared_library.mk because it defines target $(linked_module)
 # to be built as a shared library, instead of copied.
@@ -78,7 +67,6 @@ LOCAL_EXPORT_C_INCLUDE_DIRS += $(UFO_PROJECT_PATH)/inc/libpavp
 LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 LOCAL_MODULE_SUFFIX := .so
 
-# Expected: TARGET_OUT_INTERMEDIATE_LIBRARIES = ${ANDROID_PRODUCT_OUT}/obj/lib
 OVERRIDE_BUILT_MODULE_PATH := $(TARGET_OUT_INTERMEDIATE_LIBRARIES)
 
 # Do not strip, as debug section creation will fail because already stripped.
@@ -86,16 +74,10 @@ LOCAL_STRIP_MODULE := false
 
 include $(BUILD_SYSTEM)/dynamic_binary.mk
 
-# Inclusion of all_copied_headers invokes code for LOCAL_COPY_HEADERS.
-
-$(linked_module): $(UFO_PROJECT_PATH)/dist/system/lib/libpavp.so.xz all_copied_headers
+$(linked_module): $(UFO_PROJECT_PATH)/dist/system/lib/libpavp.so.xz
 	mkdir -p $(dir $@)
 	xz -d -c $< >$@
 	chmod --reference=$< $@
-
-# ------------------------------------------------------------------------
-
-include $(UFO_PROJECT_PATH)/ufo_headers.mk
 
 # ------------------------------------------------------------------------
 
