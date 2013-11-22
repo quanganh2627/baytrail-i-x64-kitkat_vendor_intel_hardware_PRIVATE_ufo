@@ -266,6 +266,21 @@ public:
         PFNWIDIAGENT_HDCPSENDMESSAGE    pSend,
         PFNWIDIAGENT_HDCPRECEIVEMESSAGE pReceive) = 0;
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Encrypts an uncompressed clear surface, to pass back to the application. 
+    ///              Adding this function "declaration but disabling definition" in release driver will remove qualms for running P4 release-internal 
+    ///              driver on release OTC build. 
+    /// \param       src_resource   [in] The source resource which contains the clear data. 
+    /// \param       dst_Resource   [out] The Destination resource. This resource will contain the encrypted data. It should be allocated by the caller.
+    /// \param       width  [in] The width of the surface in Bytes.
+    /// \param       height [in] The height of the surface in Bytes (pay attention that for NV12 the height(Bytes) = 1.5*height(Pixel)).
+    /// \return     status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code encryption_blt(
+        BYTE*   src_resource,
+        BYTE*   dst_Resource,
+        DWORD   width,
+        DWORD   height) = 0;
 
     //HSW Android WideVine Stuff
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,7 +350,7 @@ private:
     // Default constructor, copy constructor and assignment operator should not be used.
     pavp_lib_session& operator=(const pavp_lib_session& other);
     pavp_lib_session(const pavp_lib_session& other);
-    
+        
 };
 
 #endif
