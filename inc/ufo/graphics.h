@@ -53,8 +53,13 @@ enum {
      * with the same total stride as the Y samples.
      * NV12 is the preferred 4:2:0 pixel format.
      */
-    HAL_PIXEL_FORMAT_NV12_TILED_INTEL = 0x100,
     HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL = 0x100,
+
+    /**
+     * \deprecated alias name
+     * \see HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL
+     */
+    HAL_PIXEL_FORMAT_NV12_TILED_INTEL = HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL,
 
     /**
      * \todo
@@ -68,9 +73,9 @@ enum {
 
     /**
      * \deprecated alias name for use by legacy apps only
-     * \see HAL_PIXEL_FORMAT_NV12_TILED_INTEL
+     * \see HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL
      */
-    HAL_PIXEL_FORMAT_NV12_INTEL = HAL_PIXEL_FORMAT_NV12_TILED_INTEL,
+    HAL_PIXEL_FORMAT_NV12_INTEL = HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL,
 
     /**
      * \deprecated alias name for use by legacy apps only
