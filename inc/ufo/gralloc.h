@@ -36,6 +36,8 @@ extern "C" {
 
 // Enable for FB reference counting.
 #define INTEL_UFO_GRALLOC_HAVE_FB_REF_COUNTING 1
+// Enable for PAVP query.
+#define INTEL_UFO_GRALLOC_HAVE_QUERY_PAVP_SESSION 1
 
 
 /** Operations for the (*perform)() hook
@@ -54,6 +56,7 @@ enum {
     INTEL_UFO_GRALLOC_MODULE_PERFORM_FB_ACQUIRE     = 8, // (uint32_t)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_FB_RELEASE     = 9, // (uint32_t)
 #endif
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_PAVP_SESSION = 10,// (buffer_handle_t, buffer_pavp_session_t*)
 };
 
 
@@ -88,6 +91,14 @@ typedef struct intel_ufo_buffer_details_t
     int allocOffsetY;// vertical line offset to content origin within allocated buffer.
 } intel_ufo_buffer_details_t;
 
+/** Structure with info about buffer PAVP sesssion.
+ * \see INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_PAVP_SESSION
+ */
+typedef struct intel_ufo_buffer_pavp_session_t
+{
+    uint32_t sessionID; // Session ID.
+    uint32_t instance;  // Instance.
+} intel_ufo_buffer_pavp_session_t;
 
 #ifdef __cplusplus
 } // extern "C"
