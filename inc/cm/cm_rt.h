@@ -108,15 +108,14 @@
 #define CM_GPUCOPY_OUT_OF_RESOURCE                  -56
 #define CM_DEVICE_INVALID_D3DDEVICE                 -57
 #define CM_SURFACE_DELAY_DESTROY                    -58
-#define	CM_INVALID_VEBOX_STATE                      -59
-#define CM_INVALID_VEBOX_SURFACE                    -60
-#define CM_FEATURE_NOT_SUPPORTED_BY_HARDWARE        -61
+#define	CM_INVALID_VEBOX_STATE						-59
+#define CM_INVALID_VEBOX_SURFACE				    -60
+#define CM_FEATURE_NOT_SUPPORTED_BY_HARDWARE		-61
 #define CM_RESOURCE_USAGE_NOT_SUPPORT_READWRITE     -62
 #define CM_MULTIPLE_MIPLEVELS_NOT_SUPPORTED         -63
 #define CM_INVALID_UMD_CONTEXT                      -64
 #define CM_INVALID_LIBVA_SURFACE                    -65
 #define CM_INVALID_LIBVA_INITIALIZE                 -66
-#define CM_INVALIDE_KERNEL_SPILL_CODE               -76
 
 #define CM_MIN_SURF_WIDTH   1
 #define CM_MIN_SURF_HEIGHT  1
@@ -154,9 +153,6 @@
 //Time in milliseconds before kernel should timeout
 #define CM_MAX_TIMEOUT_MS CM_MAX_TIMEOUT*1000
 #define CM_NO_EVENT  ((CmEvent *)(-1))	//NO Event
-
-#define CM_DEVICE_CREATE_OPTION_DEFAULT                     0
-#define CM_DEVICE_CREATE_OPTION_SCRATCH_SPACE_DISABLE       1
 
 typedef enum _CM_STATUS
 {
@@ -380,8 +376,7 @@ typedef enum _CM_DEPENDENCY_PATTERN
     CM_WAVEFRONT                = 1,
     CM_WAVEFRONT26              = 2,
     CM_VERTICAL_DEPENDENCY      = 3,
-    CM_HORIZONTAL_DEPENDENCY    = 4,
-    CM_WAVEFRONT26Z             = 5
+    CM_HORIZONTAL_DEPENDENCY    = 4
 } CM_DEPENDENCY_PATTERN;
 
 typedef struct _CM_DEPENDENCY
@@ -429,13 +424,6 @@ typedef enum _MEMORY_TYPE {
     CM_WRITE_BACK
 } MEMORY_TYPE;
 
-typedef enum _CM_BOUNDARY_PIXEL_MODE
-{
-    CM_BOUNDARY_NORMAL  = 0x0,
-    CM_BOUNDARY_PROGRESSIVE_FRAME = 0x2,
-    CM_BOUNARY_INTERLACED_FRAME = 0x3
-}CM_BOUNDARY_PIXEL_MODE;
-
 #define BDW_L3_CONFIG_NUM 8
 #define HSW_L3_CONFIG_NUM 12
 #define IVB_2_L3_CONFIG_NUM 12
@@ -478,50 +466,6 @@ typedef enum _L3_SUGGEST_CONFIG
     IVB_SLM_PLANE_DEFAULT = IVB_L3_PLANE_9,
     HSW_SLM_PLANE_DEFAULT = HSW_L3_PLANE_9
 } L3_SUGGEST_CONFIG;
-
-static const L3_CONFIG_REGISTER_VALUES IVB_L3_PLANE[IVB_1_L3_CONFIG_NUM]  = 
-{                                                                    // SLM    URB   Rest DC     RO     I/S    C    T      Sum
-    {0x01730000, 0x00080040, 0x00000000},     // {0,    256,    0,     0,     256,    0,     0,    0,     512},
-    {0x00730000, 0x02040040, 0x00000000},     //{0,    256,    0,   128,     128,    0,     0,    0,     512},
-    {0x00730000, 0x00800040, 0x00080410},     //{0,    256,    0,    32,       0,   64,    32,  128,     512},
-    {0x00730000, 0x01000038, 0x00080410},     //{0,    224,    0,    64,       0,   64,    32,  128,     512},
-    {0x00730000, 0x02000038, 0x00040410},     //{0,    224,    0,   128,       0,   64,    32,   64,     512},
-    {0x00730000, 0x01000038, 0x00040420},     //{0,    224,    0,    64,       0,  128,    32,   64,     512},
-    {0x01730000, 0x00000038, 0x00080420},     //{0,    224,    0,     0,       0,  128,    32,  128,     512},
-    {0x01730000, 0x00000040, 0x00080020},     //{0,    256,    0,     0,       0,  128,     0,  128,     512},
-    {0x00730000, 0x020400a1, 0x00000000},      //{128,    128,    0,   128,     128,    0,     0,    0,     512},
-    {0x00730000, 0x010000a1, 0x00040810},      // {128,    128,    0,    64,       0,   64,    64,   64,     512},
-    {0x00730000, 0x008000a1, 0x00080410},      //{128,    128,    0,    32,       0,   64,    32,  128,     512},
-    {0x00730000, 0x008000a1, 0x00040420}      //{128,    128,    0,    32,       0,  128,   32,    64,     512}
-};
-
-static const L3_CONFIG_REGISTER_VALUES HSW_L3_PLANE[HSW_L3_CONFIG_NUM]  = 
-{                                                                    // SLM    URB   Rest DC     RO     I/S    C    T      Sum
-    {0x01610000, 0x00080040, 0x00000000},     // {0,    256,    0,     0,     256,    0,     0,    0,     512},
-    {0x00610000, 0x02040040, 0x00000000},     //{0,    256,    0,   128,     128,    0,     0,    0,     512},
-    {0x00610000, 0x00800040, 0x00080410},     //{0,    256,    0,    32,       0,   64,    32,  128,     512},
-    {0x00610000, 0x01000038, 0x00080410},     //{0,    224,    0,    64,       0,   64,    32,  128,     512},
-    {0x00610000, 0x02000038, 0x00040410},     //{0,    224,    0,   128,       0,   64,    32,   64,     512},
-    {0x00610000, 0x01000038, 0x00040420},     //{0,    224,    0,    64,       0,  128,    32,   64,     512},
-    {0x01610000, 0x00000038, 0x00080420},     //{0,    224,    0,     0,       0,  128,    32,  128,     512},
-    {0x01610000, 0x00000040, 0x00080020},     //{0,    256,    0,     0,       0,  128,     0,  128,     512},
-    {0x00610000, 0x020400a1, 0x00000000},      //{128,    128,    0,   128,     128,    0,     0,    0,     512},
-    {0x00610000, 0x010000a1, 0x00040810},      // {128,    128,    0,    64,       0,   64,    64,   64,     512},
-    {0x00610000, 0x008000a1, 0x00080410},      //{128,    128,    0,    32,       0,   64,    32,  128,     512},
-    {0x00610000, 0x008000a1, 0x00040420}      //{128,    128,    0,    32,       0,  128,   32,    64,     512}
-};
-
-static const L3_CONFIG_REGISTER_VALUES BDW_L3_PLANE[BDW_L3_CONFIG_NUM]  = 
-{                                                                    // SLM    URB   Rest DC     RO     I/S    C    T      Sum
-    {0x01610000, 0x00080040, 0x00000000},     //{0,    48,    48,    0,    0,    0,    0,    0,    96},
-    {0x00610000, 0x02040040, 0x00000000},     //{0,    48,    0,    16,    32,    0,    0,    0,    96},
-    {0x00610000, 0x02040040, 0x00000000},     //{0,    32,    0,    16,    48,    0,    0,    0,    96},
-    {0x00610000, 0x02040040, 0x00000000},     //{0,    32,    0,    0,    64,    0,    0,    0,    96},
-    {0x00610000, 0x02040040, 0x00000000},     //{0,    32,    64,    0,    0,    0,    0,    0,    96},
-    {0x00610000, 0x02040040, 0x00000000},     //{32,    16,    48,    0,    0,    0,    0,    0,    96},
-    {0x00610000, 0x02040040, 0x00000000},     //{32,    16,    0,    16,    32,    0,    0,    0,    96},
-    {0x00610000, 0x02040040, 0x00000000}      //{32,    16,    0,    32,    16,    0,    0,    0,    96}
-};
 
 /***********START SAMPLER8X8******************/
 //Sampler8x8 data structures
@@ -959,8 +903,6 @@ public:
     CM_RT_API virtual INT WaitForTaskFinished(DWORD dwTimeOutMs = CM_MAX_TIMEOUT_MS) = 0 ;
 };
 
-class CmThreadSpace;
-
 class CmKernel
 {
 public:       
@@ -973,8 +915,6 @@ public:
     CM_RT_API virtual INT SetKernelPayloadData(size_t size, const void *pValue) = 0;
     CM_RT_API virtual INT SetKernelPayloadSurface(UINT surfaceCount, SurfaceIndex** pSurfaces) = 0;
     CM_RT_API virtual INT SetSurfaceBTI(SurfaceIndex* pSurface, UINT BTIndex) = 0;    
-
-    CM_RT_API virtual INT AssociateThreadSpace(CmThreadSpace* & pTS) = 0;
 };
 
 class CmTask
@@ -982,7 +922,6 @@ class CmTask
 public:       
     CM_RT_API virtual INT AddKernel(CmKernel *pKernel) = 0;
     CM_RT_API virtual INT Reset(void) = 0;
-    CM_RT_API virtual INT AddSync(void) = 0;
 }; 
 
 class CmProgram;
@@ -1026,7 +965,6 @@ public:
     CM_RT_API virtual INT QuerySubresourceIndex(UINT& FirstArraySlice, UINT& FirstMipSlice) = 0;
 #endif
     CM_RT_API virtual INT SetMemoryObjectControl(MEMORY_OBJECT_CONTROL mem_ctrl, MEMORY_TYPE mem_type, UINT  age) = 0;
-    CM_RT_API virtual INT SetSurfaceState(UINT iWidth, UINT iHeight, CM_SURFACE_FORMAT Format, CM_BOUNDARY_PIXEL_MODE boundaryMode) = 0;
 };
 
 class CmSurface2DUP  
@@ -1057,8 +995,6 @@ class CmThreadSpace
 public:
     CM_RT_API virtual INT AssociateThread( UINT x, UINT y, CmKernel* pKernel , UINT threadId ) = 0;
     CM_RT_API virtual INT SelectThreadDependencyPattern ( CM_DEPENDENCY_PATTERN pattern ) = 0;
-    CM_RT_API virtual INT AssociateThreadWithMask( UINT x, UINT y, CmKernel* pKernel, UINT threadId, BYTE nDependencyMask ) = 0;
-    CM_RT_API virtual INT SetThreadSpaceColorCount( UINT colorCount ) = 0;
 };
 
 class CmThreadGroupSpace;
@@ -1078,7 +1014,6 @@ public:
     CM_RT_API virtual INT EnqueueCopyCPUToCPU( unsigned char* pDstSysMem, unsigned char* pSrcSysMem, UINT size, CmEvent* & pEvent ) = 0;
     CM_RT_API virtual INT EnqueueCopyCPUToGPUFullStride( CmSurface2D* pSurface, const unsigned char* pSysMem, const UINT widthStride, const UINT heightStride, const UINT option, CmEvent* & pEvent ) = 0;
     CM_RT_API virtual INT EnqueueCopyGPUToCPUFullStride( CmSurface2D* pSurface, unsigned char* pSysMem, const UINT widthStride, const UINT heightStride, const UINT option, CmEvent* & pEvent ) = 0;
-    CM_RT_API virtual INT EnqueueWithHints( CmTask* pTask, CmEvent* & pEvent, UINT hints = 0) = 0;
 };
 
 class CmVmeState
@@ -1207,21 +1142,18 @@ EXTERN_C CM_RT_API INT CMRT_Enqueue(CmQueue* pQueue, CmTask* pTask, CmEvent** pE
 
 #ifdef CM_DX9
     EXTERN_C CM_RT_API INT CreateCmDevice(CmDevice* &pD, UINT& version, IDirect3DDeviceManager9* pD3DDeviceMgr = NULL );
-    EXTERN_C CM_RT_API INT CreateCmDeviceEx(CmDevice* &pD, UINT & version, IDirect3DDeviceManager9* pD3DDeviceMgr, UINT  DevCreateOption = CM_DEVICE_CREATE_OPTION_DEFAULT);
     EXTERN_C CM_RT_API INT CreateCmDeviceEmu(CmDevice* &pDevice, UINT& version, IDirect3DDeviceManager9* pD3DDeviceMgr = NULL );
     EXTERN_C CM_RT_API INT DestroyCmDeviceEmu(CmDevice* &pDevice, IDirect3DDeviceManager9* pD3DDeviceMgr = NULL );
     EXTERN_C CM_RT_API INT CreateCmDeviceSim(CmDevice* &pDevice, UINT& version, IDirect3DDeviceManager9* pD3DDeviceMgr = NULL );
     EXTERN_C CM_RT_API INT DestroyCmDeviceSim(CmDevice* &pDevice, IDirect3DDeviceManager9* pD3DDeviceMgr = NULL );
 #elif defined(CM_DX11)
     EXTERN_C CM_RT_API INT CreateCmDevice(CmDevice* &pD, UINT& version, ID3D11Device* pD3D11Device = NULL);
-    EXTERN_C CM_RT_API INT CreateCmDeviceEx(CmDevice* &pD, UINT & version, ID3D11Device* pD3D11Device, UINT  DevCreateOption = CM_DEVICE_CREATE_OPTION_DEFAULT);
     EXTERN_C CM_RT_API INT CreateCmDeviceEmu(CmDevice* &pDevice, UINT& version, ID3D11Device* pD3DDeviceMgr = NULL );
     EXTERN_C CM_RT_API INT DestroyCmDeviceEmu(CmDevice* &pDevice, ID3D11Device* pD3DDeviceMgr = NULL );
     EXTERN_C CM_RT_API INT CreateCmDeviceSim(CmDevice* &pDevice, UINT& version, ID3D11Device* pD3DDeviceMgr = NULL );
     EXTERN_C CM_RT_API INT DestroyCmDeviceSim(CmDevice* &pDevice, ID3D11Device* pD3DDeviceMgr = NULL );
 #elif defined(__GNUC__)
     EXTERN_C CM_RT_API INT CreateCmDevice(CmDevice* &pD, UINT& version, VADisplay va_dpy = NULL);
-    EXTERN_C CM_RT_API INT CreateCmDeviceEx(CmDevice* &pD, UINT & version, VADisplay va_dpy, UINT  DevCreateOption = CM_DEVICE_CREATE_OPTION_DEFAULT);
     EXTERN_C CM_RT_API INT CreateCmDeviceEmu(CmDevice* &pDevice, UINT& version, VADisplay va_dpy = NULL);
     EXTERN_C CM_RT_API INT DestroyCmDeviceEmu(CmDevice* &pDevice);
     EXTERN_C CM_RT_API INT CreateCmDeviceSim(CmDevice* &pDevice, UINT& version);
