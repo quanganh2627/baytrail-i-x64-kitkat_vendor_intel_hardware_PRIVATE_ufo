@@ -125,6 +125,41 @@ enum {
     HAL_PIXEL_FORMAT_NV12_X_TILED_INTEL = 0x105,
 
     /**
+     * Formats introduced for support on Android 4.4
+     * Fromats RGBA4 and RGB5_A1 were removed from Android code, 
+     * but still are required by EGL functionality (EGL image).
+     */
+    HAL_PIXEL_FORMAT_RGBA_5551_INTEL = 0x106,
+    HAL_PIXEL_FORMAT_RGBA_4444_INTEL = 0x107,
+
+    /**
+     * only 8 bit y plane. 
+     */
+    HAL_PIXEL_FROMAT_GENERIC_8BIT_INTEL = 0x108,
+
+    /**
+     * Three planes, 8 bit Y plane followed by U, V plane with 1/4 width and full height.
+     * The U and V planes have the same stride as the Y plane.
+     */
+    HAL_PIXEL_FROMAT_YCbCr_411_INTEL    = 0x109,
+
+    /**
+     * Three planes, 8 bit Y plane followed by U, V plane with 1/2 width and 1/2 height.
+     * The U and V planes have the same stride as the Y plane.
+     */
+    HAL_PIXEL_FROMAT_YCbCr_420_H_INTEL  = 0x10A,
+
+    /**
+     * Three planes, 8 bit Y plane followed by U, V plane with full width and 1/2 height.
+     */
+    HAL_PIXEL_FORMAT_YCbCr_422_V_INTEL  = 0x10B,
+
+    /**
+     * Three planes, 8 bit Y plane followed by U, V plane with full width and full height.
+     */   
+    HAL_PIXEL_FORMAT_YCbCr_444_INTEL    = 0x10C,
+
+    /**
      * \note THIS WILL BE GOING AWAY!
      *
      * \deprecated value out of range of reserved pixel formats
