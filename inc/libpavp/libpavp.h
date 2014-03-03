@@ -47,7 +47,7 @@ typedef uint32_t    DWORD;
 
 /// \def INTERFACE_VERSION
 /// The interface version the library was compiled with.
-#define INTERFACE_VERSION 0x06
+#define INTERFACE_VERSION 0x07
 
 class pavp_lib_session
 {
@@ -84,6 +84,17 @@ public:
         max_content_stream_types = 2
     } hdcp2_content_stream_type;
     ///@}
+
+    /// \enum pavp_lib_session::hdcp2_version
+    /// HDCP2 Version
+    /// @{
+    typedef enum {
+        HDCP_VERSION_20, //!< HDCP2.0
+        HDCP_VERSION_21, //!< HDCP2.1
+        HDCP_VERSION_22, //!< HDCP2.2
+    } hdcp2_version;
+
+    /// @}
 
     /// \enum pavp_lib_session::key_type
     /// PAVP Key Types
@@ -232,6 +243,13 @@ public:
         key_type    key_type,
         DWORD       encrypted_decrypt_key[4],
         DWORD       encrypted_encrypt_key[4]) = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief                   Hint to libpavp of a detected version of HDCP, used in RTSP initilization.
+    /// \param versionDetected   version detected and hinted to libpavp
+    /// \retur                   error codes
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code hdcp2_set_detected_version(hdcp2_version versionDetected) = 0;
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief       Queries the device if HDCP2 for WiDi is suppored.
