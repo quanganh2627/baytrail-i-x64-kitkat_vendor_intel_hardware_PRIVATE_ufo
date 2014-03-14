@@ -135,19 +135,19 @@ enum {
     /**
      * only 8 bit y plane. 
      */
-    HAL_PIXEL_FROMAT_GENERIC_8BIT_INTEL = 0x108,
+    HAL_PIXEL_FORMAT_GENERIC_8BIT_INTEL = 0x108,
 
     /**
      * Three planes, 8 bit Y plane followed by U, V plane with 1/4 width and full height.
      * The U and V planes have the same stride as the Y plane.
      */
-    HAL_PIXEL_FROMAT_YCbCr_411_INTEL    = 0x109,
+    HAL_PIXEL_FORMAT_YCbCr_411_INTEL    = 0x109,
 
     /**
      * Three planes, 8 bit Y plane followed by U, V plane with 1/2 width and 1/2 height.
      * The U and V planes have the same stride as the Y plane.
      */
-    HAL_PIXEL_FROMAT_YCbCr_420_H_INTEL  = 0x10A,
+    HAL_PIXEL_FORMAT_YCbCr_420_H_INTEL  = 0x10A,
 
     /**
      * Three planes, 8 bit Y plane followed by U, V plane with full width and 1/2 height.
