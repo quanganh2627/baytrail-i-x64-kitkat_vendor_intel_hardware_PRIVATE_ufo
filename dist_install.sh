@@ -24,6 +24,12 @@ dir_from=""
 dir_to=""
 opt_verbose=1
 
+#strip symbol for user build
+opt_strip_sym=0
+#when do file command, binaries will have ELF in the output
+#use this as regex for determining binaries for strip
+regex_bin="ELF"
+
 param_list=( "${@:+${@}}" )
 
 errdet=0
@@ -54,6 +60,9 @@ for param in "${param_list[@]:+${param_list[@]}}" ; do
             ;;
         --no-dry-run)
             opt_dry_run=0
+            ;;
+        --strip-symbols)
+            opt_strip_sym=1
             ;;
         -q)
             opt_verbose=$((opt_verbose-1))
@@ -95,16 +104,17 @@ which is usually ./dist, relative to the ufo binary repostory.
 dir_to is usually \${ANDROID_PRODUCT_OUT}.
 
 Options are:
--h             Output this help text.
---help         Output this help text.
---diff         Compare files.  Do not transfer them.
---no-diff      Transfer the files.
---rm           Remove target files.
---no-rm        Do not remove target files.
---dry-run      Avoid copying or changing any files
+-h                Output this help text.
+--help            Output this help text.
+--diff            Compare files.  Do not transfer them.
+--no-diff         Transfer the files.
+--rm              Remove target files.
+--no-rm           Do not remove target files.
+--dry-run         Avoid copying or changing any files
 --no-dry-run
--q             Be less verbose
--v             Be more verbose.
+--strip-symbols   strip all symbols from binaries
+-q                Be less verbose
+-v                Be more verbose.
 EOF
     exit
 fi
@@ -238,19 +248,39 @@ for dist_file in "${dist_list[@]:+${dist_list[@]}}" ; do
                 fi
             fi
 
+
             if [ ${flag_redirect} -eq 0 ] ; then
                 if [ ${opt_verbose} -ge 1 ] || [ ${opt_dry_run} -ne 0 ] ; then
                     echo >&2 "+ " ${cpcmd} "${path_from}" "${path_to}"
+                    #strip binary symbols if requested, ignore binary test for dry-run
+                    if [ ${opt_strip_sym} -eq 1 ] ; then
+                        echo >&2 "+ " strip -s "${path_to}"
+                    fi
+
                 fi
                 if [ ${opt_dry_run} -eq 0 ] ; then
                     ${cpcmd} "${path_from}" "${path_to}"
+                    bin_test=$( file ${path_to} )
+                    #strip symbols if requested&&file is a binary
+                    if [ ${opt_strip_sym} -eq 1 ] && [[ "${bin_test}" =~ ${regex_bin} ]] ; then
+                        strip -s "${path_to}"
+                    fi
                 fi
             else
                 if [ ${opt_verbose} -ge 1 ] || [ ${opt_dry_run} -ne 0 ] ; then
                     echo >&2 "+ " ${cpcmd} "${path_from}" ">${path_to}"
+                    #strip binary symbols if requested, ignore binary test for dry-run
+                    if [ ${opt_strip_sym} -eq 1 ] ; then
+                        echo >&2 "+ " strip -s "${path_to}"
+                    fi
                 fi
                 if [ ${opt_dry_run} -eq 0 ] ; then
                     ${cpcmd} "${path_from}" >"${path_to}"
+                    #strip symbols if requested&&file is a binary
+                    bin_test=$( file ${path_to} )
+                    if [ ${opt_strip_sym} -eq 1 ] && [[ "${bin_test}" =~ ${regex_bin} ]] ; then
+                        strip -s "${path_to}"
+                    fi
                 fi
             fi
         fi
