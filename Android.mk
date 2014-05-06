@@ -58,7 +58,13 @@ $(LOCAL_MODULE)_always_extract: PRIVATE_PATH := $(LOCAL_PATH)
 $(LOCAL_MODULE)_always_extract:
 	@ echo "$(UFO_PROJECT_PATH): GEN GFX: $@"
 	$(hide) mkdir -p $(dir $@)
+
+#for user build, strip all symbols, but keep them otherwise
+ifeq ($(TARGET_BUILD_VARIANT),user)
+	$(hide) $(PRIVATE_PATH)/dist_install.sh --strip-symbols $(PRIVATE_PATH)/dist $(PRODUCT_OUT)
+else
 	$(hide) $(PRIVATE_PATH)/dist_install.sh $(PRIVATE_PATH)/dist $(PRODUCT_OUT)
+endif
 
 ifeq ($(TARGET_BOARD_PLATFORM),bigcore)
 	$(hide) $(PRIVATE_PATH)/dist_install.sh $(PRIVATE_PATH)/dist_bigcore $(PRODUCT_OUT)
