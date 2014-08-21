@@ -145,7 +145,7 @@ enum {
      * Layout information:
      * - U/V are 1/2 width and full height
      * - stride: aligned to 128
-     * - height: aligned to 64
+     * - height: aligned to FIXME
      * - tiling: always Y tiled
      *
      *       ____________w___________ ____
@@ -155,12 +155,12 @@ enum {
      *      |____________w___________|    |
      *      :                             |
      *      :_____________________________|     
-     *      |V           |                :
+     *      |U           |                :
      *      |            |                :
      *      h            h                h' = align(h,64)
      *      |_____w/2____|                :
      *      :____________ ................:
-     *      |U           |                :
+     *      |V           |                :
      *      |            |                :
      *      h            h                h' = align(h,64)
      *      |_____w/2____|                :
