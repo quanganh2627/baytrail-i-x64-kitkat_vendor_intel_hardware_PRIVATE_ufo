@@ -1,7 +1,7 @@
 /*
  * INTEL CONFIDENTIAL
  *
- * Copyright 2013-2014 Intel Corporation All Rights Reserved.
+ * Copyright 2013 Intel Corporation All Rights Reserved.
  *
  * The source code contained or described herein and all documents related to the
  * source code ("Material") are owned by Intel Corporation or its suppliers or
@@ -49,8 +49,8 @@ extern "C" {
 /**
  * stage1: media can use gem_datatype with legacy offsets/bits
  * stage2: media can use gem_datatype with new compressed offsets/bits
- * stage3: same as stage2 but additionally gralloc uses private data to store other bits that don't fit into gem_datatype
- * stage4: gralloc uses private data for all bits. only gralloc owns gem_datatype!
+ * stage3: stage2 and gralloc uses private data for other bits that don't fit into gem_datatype
+ * stage4: gralloc uses private data for all bits. gralloc owns gem_datatype!
  */
 #define INTEL_UFO_GRALLOC_MEDIA_API_STAGE 1
 
@@ -76,7 +76,7 @@ enum {
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_PAVP_SESSION = 12,  // (buffer_handle_t, uint32_t session, uint32_t instance, uint32_t is_encrypted)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_COLOR_RANGE = 13,   // (buffer_handle_t, uint32_t color_range)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_CLIENT_ID   = 14,   // (buffer_handle_t, uint32_t client_id)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_MMC_MODE    = 15,   // (buffer_handle_t, uint32_t mmc_mode)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_COMPRESSED  = 15,   // (buffer_handle_t, uint32_t is_compressed)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_KEY_FRAME   = 16,   // (buffer_handle_t, uint32_t is_key_frame)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_CODEC_TYPE  = 17,   // (buffer_handle_t, uint32_t codec, uint32_t is_interlaced)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_DIRTY_RECT  = 18,   // (buffer_handle_t, uint32_t valid, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom)
@@ -128,10 +128,9 @@ typedef struct intel_ufo_buffer_media_details_t
     uint32_t yuv_color_range;   // YUV Color range.
     uint32_t client_id;         // HWC client ID.
     uint32_t is_encrypted;
+    uint32_t is_compressed;
     uint32_t is_key_frame;
     uint32_t is_interlaced;
-    uint32_t is_mmc_capable;
-    uint32_t compression_mode;
     uint32_t codec;
     struct {
         uint32_t is_valid;
@@ -249,10 +248,10 @@ typedef union intel_ufo_bo_datatype_t {
 typedef union intel_ufo_bo_datatype_t {
     uint32_t value;
     struct {
-        uint32_t codec              :4;
+        uint32_t codec              :5;
         uint32_t is_interlaced      :1;
-        uint32_t is_mmc_capable     :1; // MMC
-        uint32_t compression_mode   :2; // MMC
+        uint32_t is_compressed      :1; // MMC
+        uint32_t compression_mode   :1; // MMC
         uint32_t color_range        :2;
         uint32_t is_key_frame       :1;
         uint32_t pavp_session_id    :8;
