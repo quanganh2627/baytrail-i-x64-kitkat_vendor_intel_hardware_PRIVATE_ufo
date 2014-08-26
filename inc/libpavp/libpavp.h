@@ -47,7 +47,7 @@ typedef uint32_t    DWORD;
 
 /// \def INTERFACE_VERSION
 /// The interface version the library was compiled with.
-#define INTERFACE_VERSION 0x07
+#define INTERFACE_VERSION 0xa
 
 class pavp_lib_session
 {
@@ -85,17 +85,6 @@ public:
     } hdcp2_content_stream_type;
     ///@}
 
-    /// \enum pavp_lib_session::hdcp2_version
-    /// HDCP2 Version
-    /// @{
-    typedef enum {
-        HDCP_VERSION_20, //!< HDCP2.0
-        HDCP_VERSION_21, //!< HDCP2.1
-        HDCP_VERSION_22, //!< HDCP2.2
-    } hdcp2_version;
-
-    /// @}
-
     /// \enum pavp_lib_session::key_type
     /// PAVP Key Types
     /// @{
@@ -110,6 +99,20 @@ public:
     /// \typedef pavp_lib_session::pavp_lib_version
     /// Libpavp Version Number
     typedef UINT32 pavp_lib_version;
+
+    /// \enum pavp_lib_session::hdcp_capability
+    /// HDCP capability of host and any connected display
+    /// Adapted directly from Widevine MDRM Security Integration Guide for CENC
+    /// @{
+    typedef enum {
+        HDCP_CAP_NO_HDCP_NO_SECURE_DATA_PATH = 0x0,  //!< HDCP is unsupported, local display is not secure
+        HDCP_CAP_HDCP_10                     = 0x1,  //!< HDCP1.x is supported by host and display
+        HDCP_CAP_HDCP_20                     = 0x2,  //!< HDCP2.0 is supported by host and display
+        HDCP_CAP_HDCP_21                     = 0x3,  //!< HDCP2.1 is supported by host and display
+        HDCP_CAP_HDCP_22                     = 0X4,  //!< HDCP2.2 is supported by host and display
+        HDCP_CAP_NO_HDCP_SECURE_DATA_PATH    = 0xff, //!< HDCP is not supported, local display is secure
+    } hdcp_capability_type;
+    ///@}
 
     /// \typedef pavp_lib_session::PFNWIDIAGENT_HDCPSENDMESSAGE
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +189,17 @@ public:
     /// \param       srm_data_size  [in] The size of the binary data.
     /// \return      status_ok on success, error codes on failure.
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual pavp_lib_code hdcp_set_srm(UINT8* srmData, UINT32 srmDataSize) = 0;
+    virtual pavp_lib_code hdcp_set_srm(UINT8 *srmData, UINT32 srmDataSize) = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Returns the HDCP support of the host and any connected display.
+    /// \par         This method conforms to the return values specified by the Widevine MDRM Security Integration Guide for CENC. 
+    ///              See pavp_lib_session::hdcp_capability_type for possible values.
+    /// \param       current [out]  current returns the HDCP capability successfully negotioated by the host to a display
+    /// \param       maximum [out]  maximum returns the maximum supported HDCP capibility of the host
+    /// \return      status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code hdcp_get_capability(UINT8 *current, UINT8 *maximum) = 0;
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief       Enables HDCP1 and creates a PAVP session and initializes the required private variables.
@@ -245,13 +258,6 @@ public:
         DWORD       encrypted_encrypt_key[4]) = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief                   Hint to libpavp of a detected version of HDCP, used in RTSP initilization.
-    /// \param versionDetected   version detected and hinted to libpavp
-    /// \retur                   error codes
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual pavp_lib_code hdcp2_set_detected_version(hdcp2_version versionDetected) = 0;
-    
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief       Queries the device if HDCP2 for WiDi is suppored.
     /// \return      hdcp2_supported if supported, hdcp2_not_supported if not supported.
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,6 +289,15 @@ public:
     virtual pavp_lib_code hdcp2_create_and_authenticate(
         PFNWIDIAGENT_HDCPSENDMESSAGE    pSend,
         PFNWIDIAGENT_HDCPRECEIVEMESSAGE pReceive) = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Recreates hdcp2 session without hdcp re-authorization
+    /// \par         Details:
+    /// \li          This API to recreate hdcp session when the rest of the hdcp states are already authorized.
+    ///              This is a mechanism for app to recover hdcp session retaining authetication states.
+    /// \return      status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code hdcp2_recreate() = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief       Encrypts an uncompressed clear surface, to pass back to the application. 
