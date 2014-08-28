@@ -47,7 +47,7 @@ typedef uint32_t    DWORD;
 
 /// \def INTERFACE_VERSION
 /// The interface version the library was compiled with.
-#define INTERFACE_VERSION 0x07
+#define INTERFACE_VERSION 0x09
 
 class pavp_lib_session
 {
@@ -283,6 +283,15 @@ public:
     virtual pavp_lib_code hdcp2_create_and_authenticate(
         PFNWIDIAGENT_HDCPSENDMESSAGE    pSend,
         PFNWIDIAGENT_HDCPRECEIVEMESSAGE pReceive) = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Recreates hdcp2 session without hdcp re-authorization
+    /// \par         Details:
+    /// \li          This API to recreate hdcp session when the rest of the hdcp states are already authorized.
+    ///              This is a mechanism for app to recover hdcp session retaining authetication states.
+    /// \return      status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code hdcp2_recreate() = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief       Encrypts an uncompressed clear surface, to pass back to the application. 
