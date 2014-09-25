@@ -22,6 +22,20 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
+LOCAL_COPY_HEADERS_TO := ufo/
+
+LOCAL_COPY_HEADERS :=
+LOCAL_COPY_HEADERS += inc/libivp/iVP.h
+
+include $(BUILD_COPY_HEADERS)
+
+# ------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------
+
+include $(CLEAR_VARS)
+
 LOCAL_COPY_HEADERS_TO := cm/
 
 LOCAL_COPY_HEADERS :=

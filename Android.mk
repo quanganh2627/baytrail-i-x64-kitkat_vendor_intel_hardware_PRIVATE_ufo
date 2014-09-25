@@ -74,6 +74,40 @@ endif
 
 include $(CLEAR_VARS)
 
+LOCAL_MODULE := libivp
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_EXPORT_C_INCLUDE_DIRS += $(UFO_PROJECT_PATH)/include
+
+# Can't use shared_library.mk because it defines target $(linked_module)
+# to be built as a shared library, instead of copied.
+# Can't use prebuilt.mk because it has a dummy export_includes.
+
+# Set things that would be set by shared_library.mk if really building a
+# shared library.
+
+LOCAL_MODULE_CLASS := SHARED_LIBRARIES
+LOCAL_MODULE_SUFFIX := .so
+
+# Expected: TARGET_OUT_INTERMEDIATE_LIBRARIES = ${ANDROID_PRODUCT_OUT}/obj/lib
+OVERRIDE_BUILT_MODULE_PATH := $(TARGET_OUT_INTERMEDIATE_LIBRARIES)
+
+# Do not strip, as debug section creation will fail because already stripped.
+LOCAL_STRIP_MODULE := false
+
+include $(BUILD_SYSTEM)/dynamic_binary.mk
+
+# Inclusion of all_copied_headers invokes code for LOCAL_COPY_HEADERS.
+
+$(linked_module): $(UFO_PROJECT_PATH)/dist/system/lib/libivp.so.xz all_copied_headers
+	mkdir -p $(dir $@)
+	xz -d -c $< >$@
+	chmod --reference=$< $@
+
+# ------------------------------------------------------------------------
+
+include $(CLEAR_VARS)
+
 LOCAL_MODULE := libpavp
 LOCAL_MODULE_TAGS := optional
 
