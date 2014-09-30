@@ -464,6 +464,39 @@ enum {
     HAL_PIXEL_FORMAT_NV12_LINEAR_CAMERA_INTEL = 0x10F,
 
     /**
+     * Intel P010 format.
+     *
+     * Used for 10bit usage for HEVC/VP9 decoding and video processing.
+     *
+     * Layout information:
+     * - each pixel being represented by 16 bits (2 bytes)
+     * - Y plane with even height and width
+     * - hstride multiple of 64 pixels (128 bytes)
+     * - hstride is specified in pixels, not in bytes
+     * - vstride is aligned to 64 lines
+     * - U/V are interleaved and 1/2 width and 1/2 height
+     * - memory is Y tiled
+     *
+     *       ____________w___________ ____
+     *      |Y0|Y1                   |    |
+     *      |                        |    |
+     *      h                        h    h'= align(h,64)
+     *      |                        |    |
+     *      |                        |    |
+     *      |____________w___________|    |
+     *      :                             |
+     *      :________________________ ____|     
+     *      |U|V|U|V                 |    :
+     *     h/2                      h/2   :
+     *      |____________w___________|    h"= h'/2
+     *      :.............................:
+     *
+     *      pitch (in bytes) = align(w*2,128)
+     *      size (in bytes) = pitch*3/2
+     */
+    HAL_PIXEL_FORMAT_P010_INTEL = 0x110,
+
+    /**
      * \deprecated alias name
      * \see HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL
      */
