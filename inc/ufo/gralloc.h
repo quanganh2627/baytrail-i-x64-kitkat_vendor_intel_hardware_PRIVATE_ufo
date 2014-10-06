@@ -82,6 +82,7 @@ enum {
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_DIRTY_RECT  = 18,   // (buffer_handle_t, uint32_t valid, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_GMM_PARAMS   = 19,   // (buffer_handle_t, GMM_RESCREATE_PARAMS* params)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_PROBE_BUFFER_GEOMETRY = 20,// FIXME PLACEHOLDER (intel_ufo_buffer_geometry_t*)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_REGISTER_HWC_PROCS = 21,   // (const intel_ufo_hwc_procs_t*)
 };
 
 
@@ -105,8 +106,8 @@ typedef struct intel_ufo_buffer_details_t
     int format;      // \see alloc_device_t::alloc
     int usage;       // \see alloc_device_t::alloc
     int name;        // flink
-    uint32_t fb;     // framebuffer id
-    int drmformat;   // drm format
+    uint32_t fb;        // framebuffer id
+    uint32_t fb_format; // framebuffer drm format
     int pitch;       // buffer pitch (in bytes)
     int size;        // buffer size (in bytes)
 
@@ -269,6 +270,90 @@ typedef union intel_ufo_bo_datatype_t {
  */
 
 #endif /* INTEL_UFO_GRALLOC_MEDIA_API_STAGE */
+
+
+
+/** This structure defines private callback API from GrAlloc to HWC.
+ * \see gralloc_module_t::perform
+ * \see INTEL_UFO_GRALLOC_MODULE_PERFORM_REGISTER_HWC_PROCS
+ */
+typedef struct intel_ufo_hwc_procs_t
+{
+    /* This function will be called by gralloc during processing of alloc() request.
+     * It will be called after gralloc initially resolves flexible HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED format.
+     * It will be called before gralloc issues any allocation calls into kernel driver.
+     * If this function returns an error then gralloc will allocate buffer using default settings.
+     * \see alloc_device_t::alloc
+     *
+     * \param procs pointer to struct that was passed during registration
+     * \param width pointer to requested buffer width; HWC may increase it to optimize allocation (cursor/full screen)
+     * \param height pointer to requested buffer height; HWC may increase it to optimize allocation (cursor/full screen)
+     * \param format pointer to effective buffer format; HWC may modify it only if HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED
+     * \param usage pointer to requested buffer usage; HWC may add new usage flags
+     * \param fb_format pointer to FB format to be used by gralloc for this buffer; if set to zero then gralloc will not allocate FB for this buffer.
+     * \param flags pointer to flags; TBD
+     *
+     * \return 0 on success or a negative error code on error.
+     *
+     * \note this function field is REQUIRED.
+     */
+    int (*pre_buffer_alloc)(const struct intel_ufo_hwc_procs_t* procs, int *width, int *height, int *format, int *usage, uint32_t *fb_format, uint32_t *flags);
+
+    /* This function will be called by gralloc during processing of alloc() request.
+     * It will be called after only after succesfull buffer memory allocation.
+     * \see alloc_device_t::alloc
+     *
+     * \param procs pointer to struct that was passed during registration
+     * \param buffer handle to just allocated buffer
+     * \param details pointer to buffer details
+     *
+     * \note this function field is REQUIRED.
+     */
+    void (*post_buffer_alloc)(const struct intel_ufo_hwc_procs_t* procs, buffer_handle_t, const intel_ufo_buffer_details_t *details);
+
+    /* This function will be called by gralloc during processing of free() request.
+     * It will be called after only after succesfull buffer memory allocation.
+     * \see alloc_device_t::free
+     *
+     * \param procs pointer to struct that was passed during registration
+     * \param buffer handle to buffer that is about to be released by gralloc
+     *
+     * \note this function field is REQUIRED.
+     */
+    void (*pre_buffer_free)(const struct intel_ufo_hwc_procs_t* procs, buffer_handle_t);
+
+    /* Reserved for future use. Must be NULL. */
+    void *reserved[5];
+} intel_ufo_hwc_procs_t;
+
+
+/**
+ * \see intel_ufo_hwc_procs_t::pre_buffer_alloc
+ * \see intel_ufo_buffer_details_t::flags
+ */
+enum {
+    INTEL_UFO_BUFFER_FLAG_NONE      = 0,
+    /**
+     * HWC can set the INTEL_UFO_BUFFER_FLAG_LINEAR flag to indicate
+     * that gralloc should use linear allocation for this buffer.
+     */
+    INTEL_UFO_BUFFER_FLAG_LINEAR    = 0x00000001,
+    /**
+     * HWC can set the INTEL_UFO_BUFFER_FLAG_X_TILED flag to indicate
+     * that gralloc should use X tiled allocation for this buffer.
+     */
+    INTEL_UFO_BUFFER_FLAG_X_TILED   = 0x00000002,
+    /**
+     * HWC can set the INTEL_UFO_BUFFER_FLAG_Y_TILED flag to indicate
+     * that gralloc should use Y tiled allocation for this buffer.
+     */
+    INTEL_UFO_BUFFER_FLAG_Y_TILED   = 0x00000004,
+    /**
+     * HWC can set the INTEL_UFO_BUFFER_FLAG_CURSOR flag to indicate
+     * that gralloc should treat this buffer as cursor allocation.
+     */
+    INTEL_UFO_BUFFER_FLAG_CURSOR    = 0x10000000,
+};
 
 
 #ifdef __cplusplus
