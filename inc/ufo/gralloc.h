@@ -320,7 +320,7 @@ typedef struct intel_ufo_hwc_procs_t
      *
      * \note this function field is REQUIRED.
      */
-    void (*pre_buffer_free)(const struct intel_ufo_hwc_procs_t* procs, buffer_handle_t);
+    void (*post_buffer_free)(const struct intel_ufo_hwc_procs_t* procs, buffer_handle_t);
 
     /* Reserved for future use. Must be NULL. */
     void *reserved[5];

@@ -47,7 +47,7 @@ typedef uint32_t    DWORD;
 
 /// \def INTERFACE_VERSION
 /// The interface version the library was compiled with.
-#define INTERFACE_VERSION 0xa
+#define INTERFACE_VERSION 0xb
 
 class pavp_lib_session
 {
@@ -299,6 +299,22 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual pavp_lib_code hdcp2_recreate() = 0;
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief       Decrypts an encrypted byte array and blts data to a surface.
+    ///
+    /// \param       pIV    [in]  The IV + counter that was used to encrypt the surface, must be little
+    ///                           endian
+    /// \param       src    [in]  The source resource which contains the AES encrypted data. 
+    /// \param       dest   [out] The Destination resource. This should be allocated by the caller.
+    /// \param       size   [in]  The size of the src buffer.
+    /// \return      status_ok on success, error codes on failure.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    virtual pavp_lib_code decryption_blt(
+        const DWORD(&iv)[4],
+        const BYTE* const src, 
+        BYTE* const dest,
+        const size_t size) = 0;
+    
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief       Encrypts an uncompressed clear surface, to pass back to the application. 
     ///              Adding this function "declaration but disabling definition" in release driver will remove qualms for running P4 release-internal 
