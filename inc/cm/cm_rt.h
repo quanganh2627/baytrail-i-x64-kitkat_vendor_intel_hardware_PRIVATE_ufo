@@ -135,6 +135,8 @@
 #define CM_INVALID_UMD_CONTEXT                      -64
 #define CM_INVALID_LIBVA_SURFACE                    -65
 #define CM_INVALID_LIBVA_INITIALIZE                 -66
+#define CM_SURFACE_CACHED                           -74
+#define CM_SURFACE_IN_USE                           -75
 #define CM_INVALIDE_KERNEL_SPILL_CODE               -76
 
 #define CM_MIN_SURF_WIDTH   1
@@ -176,6 +178,7 @@
 
 #define CM_DEVICE_CREATE_OPTION_DEFAULT                     0
 #define CM_DEVICE_CREATE_OPTION_SCRATCH_SPACE_DISABLE       1
+#define CM_DEVICE_CREATE_OPTION_SURFACE_REUSE_ENABLE        128
 
 typedef enum _CM_STATUS
 {
@@ -211,6 +214,8 @@ typedef enum _GPU_GT_PLATFORM{
     PLATFORM_INTEL_GT4         = 4,
     PLATFORM_INTEL_GTVLV       = 5,
     PLATFORM_INTEL_GTVLVPLUS   = 6,
+    PLATFORM_INTEL_GT1_5       = 7
+    
 } GPU_GT_PLATFORM;
 
 typedef enum _CM_DEVICE_CAP_NAME
