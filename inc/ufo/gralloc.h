@@ -71,18 +71,20 @@ enum {
     INTEL_UFO_GRALLOC_MODULE_PERFORM_FB_ACQUIRE     = 8, // (uint32_t)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_FB_RELEASE     = 9, // (uint32_t)
 #endif
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_PAVP_SESSION = 10,   // (buffer_handle_t, intel_ufo_buffer_pavp_session_t*)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_MEDIA_DETAILS = 11,  // (buffer_handle_t, intel_ufo_buffer_media_details_t*)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_PAVP_SESSION = 12,  // (buffer_handle_t, uint32_t session, uint32_t instance, uint32_t is_encrypted)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_COLOR_RANGE = 13,   // (buffer_handle_t, uint32_t color_range)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_CLIENT_ID   = 14,   // (buffer_handle_t, uint32_t client_id)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_MMC_MODE    = 15,   // (buffer_handle_t, uint32_t mmc_mode)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_KEY_FRAME   = 16,   // (buffer_handle_t, uint32_t is_key_frame)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_CODEC_TYPE  = 17,   // (buffer_handle_t, uint32_t codec, uint32_t is_interlaced)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_DIRTY_RECT  = 18,   // (buffer_handle_t, uint32_t valid, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_GMM_PARAMS   = 19,   // (buffer_handle_t, GMM_RESCREATE_PARAMS* params)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_PROBE_BUFFER_GEOMETRY = 20,// FIXME PLACEHOLDER (intel_ufo_buffer_geometry_t*)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_REGISTER_HWC_PROCS = 21,   // (const intel_ufo_hwc_procs_t*)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_PAVP_SESSION    = 10,   // (buffer_handle_t, intel_ufo_buffer_pavp_session_t*)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_MEDIA_DETAILS   = 11,   // (buffer_handle_t, intel_ufo_buffer_media_details_t*)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_PAVP_SESSION   = 12,   // (buffer_handle_t, uint32_t session, uint32_t instance, uint32_t is_encrypted)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_COLOR_RANGE    = 13,   // (buffer_handle_t, uint32_t color_range)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_CLIENT_ID      = 14,   // (buffer_handle_t, uint32_t client_id)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_MMC_MODE       = 15,   // (buffer_handle_t, uint32_t mmc_mode)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_KEY_FRAME      = 16,   // (buffer_handle_t, uint32_t is_key_frame)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_CODEC_TYPE     = 17,   // (buffer_handle_t, uint32_t codec, uint32_t is_interlaced)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_DIRTY_RECT     = 18,   // (buffer_handle_t, uint32_t valid, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_GMM_PARAMS      = 19,   // (buffer_handle_t, GMM_RESCREATE_PARAMS* params)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_PROBE_BUFFER_GEOMETRY = 20,   // FIXME PLACEHOLDER (intel_ufo_buffer_geometry_t*)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_REGISTER_HWC_PROCS    = 21,   // (const intel_ufo_hwc_procs_t*)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_FRAME_UPDATED  = 22,   // (buffer_handle_t, uint32_t is_updated)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_FRAME_ENCODED  = 23,   // (buffer_handle_t, uint32_t is_encoded)
 };
 
 
@@ -128,6 +130,8 @@ typedef struct intel_ufo_buffer_media_details_t
     uint32_t pavp_instance_id;  // PAVP Instance.
     uint32_t yuv_color_range;   // YUV Color range.
     uint32_t client_id;         // HWC client ID.
+    uint32_t is_updated;        // frame updated flag
+    uint32_t is_encoded;        // frame encoded flag
     uint32_t is_encrypted;
     uint32_t is_key_frame;
     uint32_t is_interlaced;
@@ -237,7 +241,9 @@ typedef union intel_ufo_bo_datatype_t {
     uint32_t value;
     struct {
         uint32_t color_range        :2;
-        uint32_t unused1            :7;
+        uint32_t is_updated         :1;
+        uint32_t is_encoded         :1;
+        uint32_t unused1            :5;
         uint32_t is_encrypted       :1;
         uint32_t unused2            :2;
         uint32_t pavp_session_id    :4;
@@ -250,7 +256,9 @@ typedef union intel_ufo_bo_datatype_t {
 typedef union intel_ufo_bo_datatype_t {
     uint32_t value;
     struct {
-        uint32_t codec              :4;
+        uint32_t unused             :2;
+        uint32_t is_updated         :1;
+        uint32_t is_encoded         :1;
         uint32_t is_interlaced      :1;
         uint32_t is_mmc_capable     :1; // MMC
         uint32_t compression_mode   :2; // MMC
