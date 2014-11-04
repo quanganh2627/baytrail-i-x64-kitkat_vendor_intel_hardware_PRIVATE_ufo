@@ -85,6 +85,12 @@ enum {
     INTEL_UFO_GRALLOC_MODULE_PERFORM_REGISTER_HWC_PROCS    = 21,   // (const intel_ufo_hwc_procs_t*)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_FRAME_UPDATED  = 22,   // (buffer_handle_t, uint32_t is_updated)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_FRAME_ENCODED  = 23,   // (buffer_handle_t, uint32_t is_encoded)
+#if 1 // reserved for internal use only !
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_PRIVATE_0      = -1000,
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_PRIVATE_1      = -1001,
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_PRIVATE_2      = -1002,
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_PRIVATE_3      = -1003,
+#endif
 };
 
 
