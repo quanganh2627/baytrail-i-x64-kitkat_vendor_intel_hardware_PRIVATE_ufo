@@ -497,6 +497,58 @@ enum {
     HAL_PIXEL_FORMAT_P010_INTEL = 0x110,
 
     /**
+     * Intel Z16 format.
+     *
+     * Used by DS4 camera to represent depth.
+     *
+     * Layout information:
+     * - each pixel being represented by 16 bits (2 bytes)
+     * - no width/height restrictions
+     * - hstride is width
+     * - hstride is specified in pixels, not in bytes
+     * - vstride is height
+     * - memory is linear
+     *
+     *       ____________w___________
+     *      |Z0|Z1                   |
+     *      |                        |
+     *      h                        h
+     *      |                        |
+     *      |                        |
+     *      |____________w___________|
+     *
+     *      pitch (in bytes) = w*2
+     *      size (in bytes) = w*h*2
+     */
+    HAL_PIXEL_FORMAT_Z16_INTEL = 0x111,
+
+    /**
+     * Intel UVMAP format.
+     *
+     * Used by DS4 camera to represent depth to color map.
+     *
+     * Layout information:
+     * - each pixel being represented by 64 bits (8 bytes)
+     * - no width/height restrictions
+     * - hstride is width
+     * - hstride is specified in pixels, not in bytes
+     * - vstride is height
+     * - memory is linear
+     *
+     *       ____________w___________
+     *      |m0|m1                   |
+     *      |                        |
+     *      h                        h
+     *      |                        |
+     *      |                        |
+     *      |____________w___________|
+     *
+     *      pitch (in bytes) = w*8
+     *      size (in bytes) = w*h*8
+     */
+    HAL_PIXEL_FORMAT_UVMAP64_INTEL = 0x112,
+
+    /**
      * \deprecated alias name
      * \see HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL
      */
