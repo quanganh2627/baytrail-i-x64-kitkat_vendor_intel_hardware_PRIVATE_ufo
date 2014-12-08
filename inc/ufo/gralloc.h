@@ -36,8 +36,31 @@ extern "C" {
 
 /** Simple API level control
  * \see INTEL_UFO_GRALLOC_MODULE_VERSION_LATEST
+ * \note level 0 = legacy flink mode
+ * \note level 1 = prime fd \see INTEL_UFO_GRALLOC_HAVE_PRIME
  */
 #define INTEL_UFO_GRALLOC_API_LEVEL 0
+
+
+/** Gralloc support for drm prime fds.
+ * \note if non-zero, then prime fds are supported and used as buffer sharing mechanism.
+ * \note if zero or undefined, then prime fds are not supported (flink names are used instead).
+ * \see INTEL_UFO_GRALLOC_HAVE_FLINK
+ * \see INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_INFO
+ * \see INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_PRIME
+ */
+#define INTEL_UFO_GRALLOC_HAVE_PRIME 0
+
+
+/** Gralloc support for (legacy) flink names.
+ * \note if zero, then flink names are not available (prime fds are used instead).
+ * \note if non-zero, then gralloc supports flink names.
+ * \see INTEL_UFO_GRALLOC_HAVE_PRIME
+ * \see INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_NAME
+ * \see INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_INFO
+ */
+#define INTEL_UFO_GRALLOC_HAVE_FLINK (1 || !(INTEL_UFO_GRALLOC_HAVE_PRIME))
+
 
 // Enable for FB reference counting.
 #define INTEL_UFO_GRALLOC_HAVE_FB_REF_COUNTING 1
@@ -55,6 +78,21 @@ extern "C" {
 #define INTEL_UFO_GRALLOC_MEDIA_API_STAGE 1
 
 
+/** Gralloc deprecation mechanism (enabled by default)
+ * \note To supress can be defined in local mk to disable deprecated attributes.
+ */
+#ifndef INTEL_UFO_GRALLOC_IGNORE_DEPRECATED
+#define INTEL_UFO_GRALLOC_IGNORE_DEPRECATED 0
+#endif
+
+#if !INTEL_UFO_GRALLOC_IGNORE_DEPRECATED
+// deprecate use of flink names if prime fds are enabled
+#define INTEL_UFO_GRALLOC_DEPRECATE_FLINK       (INTEL_UFO_GRALLOC_HAVE_PRIME)
+// deprecate use of datatype from media api stage3
+#define INTEL_UFO_GRALLOC_DEPRECATE_DATATYPE    (INTEL_UFO_GRALLOC_MEDIA_API_STAGE >= 3)
+#endif
+
+
 /** Operations for the (*perform)() hook
  * \see gralloc_module_t::perform
  */
@@ -63,7 +101,11 @@ enum {
     INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_DRM_FD     = 1, // (int*)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_DISPLAY    = 2, // (int display, uint32_t width, uint32_t height, uint32_t xdpi, uint32_t ydpi)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_HANDLE  = 3, // (buffer_handle_t, int*)
+#if INTEL_UFO_GRALLOC_DEPRECATE_FLINK
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_NAME_DEPRECATED = 4,
+#else
     INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_NAME    = 4, // (buffer_handle_t, uint32_t*)
+#endif
     INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_FBID    = 5, // (buffer_handle_t, uint32_t*)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_INFO    = 6, // (buffer_handle_t, intel_ufo_buffer_details_t*)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_STATUS  = 7, // (buffer_handle_t)
@@ -81,7 +123,7 @@ enum {
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_CODEC_TYPE     = 17,   // (buffer_handle_t, uint32_t codec, uint32_t is_interlaced)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_DIRTY_RECT     = 18,   // (buffer_handle_t, uint32_t valid, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_QUERY_GMM_PARAMS      = 19,   // (buffer_handle_t, GMM_RESCREATE_PARAMS* params)
-    INTEL_UFO_GRALLOC_MODULE_PERFORM_PROBE_BUFFER_GEOMETRY = 20,   // FIXME PLACEHOLDER (intel_ufo_buffer_geometry_t*)
+    INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_PRIME          = 24,   // (buffer_handle_t, int *prime)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_REGISTER_HWC_PROCS    = 21,   // (const intel_ufo_hwc_procs_t*)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_FRAME_UPDATED  = 22,   // (buffer_handle_t, uint32_t is_updated)
     INTEL_UFO_GRALLOC_MODULE_PERFORM_SET_BO_FRAME_ENCODED  = 23,   // (buffer_handle_t, uint32_t is_encoded)
@@ -109,11 +151,24 @@ enum {
  */
 typedef struct intel_ufo_buffer_details_t
 {
+#if INTEL_UFO_GRALLOC_API_LEVEL > 0
+    int magic;       // [in] size of this struct
+#endif
     int width;       // \see alloc_device_t::alloc
     int height;      // \see alloc_device_t::alloc
     int format;      // \see alloc_device_t::alloc
     int usage;       // \see alloc_device_t::alloc
+#if INTEL_UFO_GRALLOC_HAVE_PRIME
+    int prime;       // prime fd \note gralloc retains fd ownership
+#endif
+#if INTEL_UFO_GRALLOC_DEPRECATE_FLINK
+  union { 
+    int name __attribute__ ((deprecated));
+    int name_DEPRECATED;
+  };
+#else
     int name;        // flink
+#endif
     uint32_t fb;        // framebuffer id
     uint32_t fb_format; // framebuffer drm format
     int pitch;       // buffer pitch (in bytes)
@@ -368,6 +423,12 @@ enum {
      */
     INTEL_UFO_BUFFER_FLAG_CURSOR    = 0x10000000,
 };
+
+
+// deprecation internals...
+#if INTEL_UFO_GRALLOC_DEPRECATE_FLINK
+static const int INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_NAME __attribute__((deprecated)) = INTEL_UFO_GRALLOC_MODULE_PERFORM_GET_BO_NAME_DEPRECATED;
+#endif
 
 
 #ifdef __cplusplus
